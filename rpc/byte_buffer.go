@@ -17,15 +17,6 @@ func newByteBuffer(length int) byteBuffer {
 func (b *byteBuffer) Read(buffer []byte, count int, offset int) int {
 	remain := b.length - b.readCount
 	reading := count - offset
-	//if reading >= remain {
-	//    copy(b.buffers[b.readCount:b.readCount+remain], buffer[offset:offset+remain])
-	//    b.readCount += remain
-	//    return remain
-	//}
-	//copy(b.buffers[b.readCount:b.readCount+reading], buffer[offset:offset+reading])
-	//b.readCount += reading
-	//return reading
-
 	readLength := 0
 	if reading >= remain {
 		readLength = remain
@@ -33,7 +24,7 @@ func (b *byteBuffer) Read(buffer []byte, count int, offset int) int {
 		readLength = reading
 	}
 	copy(b.buffers[b.readCount:b.readCount+readLength], buffer[offset:offset+readLength])
-    b.readCount += readLength
+	b.readCount += readLength
 	return readLength
 }
 

@@ -41,7 +41,7 @@ type IQueueChannel interface {
 	Publish(message interface{})
 }
 type IProducerThreadSubscriber interface {
-	//Allows for the registration and deregistration of subscriptions. IFiber
+	//Allows for the registration and deregistration of fiber. IFiber
 	Subscriptions() core.ISubscriptionRegistry
 	/*Method called from producer threads*/
 	ReceiveOnProducerThread(msg ...interface{})

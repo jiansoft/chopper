@@ -23,15 +23,10 @@ func (defaultExecutor) ExecuteTask(task Task) {
 }
 
 func (t Task) Execute() {
-	f := reflect.ValueOf(t.PaddingFunc)
-	in := make([]reflect.Value, len(t.FuncParams))
+	execFunc := reflect.ValueOf(t.PaddingFunc)
+	params := make([]reflect.Value, len(t.FuncParams))
 	for k, param := range t.FuncParams {
-		in[k] = reflect.ValueOf(param)
+		params[k] = reflect.ValueOf(param)
 	}
-	func(in []reflect.Value) { _ = f.Call(in) }(in)
-}
-
-func (t Task) ExecuteWithParams(params ...interface{}) {
-	t.FuncParams = params
-	t.Execute()
+	func(in []reflect.Value) { _ = execFunc.Call(in) }(params)
 }

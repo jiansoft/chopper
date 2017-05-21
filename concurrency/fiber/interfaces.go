@@ -5,10 +5,6 @@ import (
 	"github.com/jiansoft/chopper/system"
 )
 
-type IThreadPool interface {
-	Queue(t core.Task)
-}
-
 type IQueue interface {
 	Enqueue(taskFun interface{}, params ...interface{})
 	Run()

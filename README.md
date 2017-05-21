@@ -1,6 +1,6 @@
 # Chopper
 
-Chopper is a tools created to help build TCP servers faster.
+chopper is used for rapid development of TCP application and some useful library in Go. It is inspired by retlang.
 
 Usage
 ================
@@ -10,3 +10,12 @@ Usage
 ~~~
 go get github.com/jiansoft/chopper
 ~~~
+
+
+## License
+
+Copyright (c) 2017
+
+Released under the MIT license:
+
+- [www.opensource.org/licenses/MIT](http://www.opensource.org/licenses/MIT)

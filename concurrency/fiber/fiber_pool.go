@@ -103,9 +103,10 @@ func (f *FiberPool) flush() {
 	f.lock.Lock()
 	if len(f.tasks) > 0 {
 		//有任務在清空任務清單時又新增了任務
+        //It has some new task enqueue when clear tasks
 		f.queue(f.flush)
 	} else {
-		//沒有任務了
+		//Task is empty
 		f.flushPending = false
 	}
 	f.lock.Unlock()

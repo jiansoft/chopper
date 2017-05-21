@@ -29,9 +29,6 @@ func (c *ConcurrentQueue) Enqueue(item interface{}) {
 func (c *ConcurrentQueue) TryPeek() (interface{}, bool) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
-	//if c.Count() == 0 {
-	//    return nil, false
-	//}
 	lastItem := c.container.Back()
 	if lastItem == nil {
 		return nil, false
@@ -42,9 +39,6 @@ func (c *ConcurrentQueue) TryPeek() (interface{}, bool) {
 func (c *ConcurrentQueue) TryDequeue() (interface{}, bool) {
 	c.lock.Lock()
 	defer c.lock.Unlock()
-	//if c.Count() <= 0 {
-	//	return nil, false
-	//}
 	lastItem := c.container.Back()
 	if lastItem == nil {
 		return nil, false

@@ -1,8 +1,6 @@
 package channels
 
 import (
-	"sync"
-
 	"github.com/jiansoft/chopper/collections"
 	"github.com/jiansoft/chopper/concurrency/core"
 	"github.com/jiansoft/chopper/concurrency/fiber"
@@ -11,12 +9,10 @@ import (
 
 type channel struct {
 	subscribers collections.ConcurrentMap
-	lock        *sync.Mutex
 }
 
 func (c *channel) init() *channel {
 	c.subscribers = collections.NewConcurrentMap()
-	c.lock = new(sync.Mutex)
 	return c
 }
 
@@ -25,7 +21,8 @@ func NewChannel() *channel {
 }
 
 func (c *channel) Subscribe(fiber fiber.IFiber, taskFun interface{}, params ...interface{}) system.IDisposable {
-	return c.SubscribeOnProducerThreads(NewChannelSubscription(fiber, core.Task{PaddingFunc: taskFun, FuncParams: params}))
+	subscription := NewChannelSubscription(fiber, core.Task{PaddingFunc: taskFun, FuncParams: params})
+	return c.SubscribeOnProducerThreads(subscription)
 }
 
 func (c *channel) SubscribeOnProducerThreads(subscriber IProducerThreadSubscriber) system.IDisposable {
@@ -41,18 +38,20 @@ func (c *channel) subscribeOnProducerThreads(subscriber core.Task, fiber core.IS
 	//放到Channel 內的貯列，當 Chanel.Publish 時發布給訂閱的方法
 	c.subscribers.Set(unsubscriber.IdentifyId(), unsubscriber)
 	return unsubscriber
-
 }
 
 func (c *channel) Publish(msg ...interface{}) {
 	for _, val := range c.subscribers.Items() {
-		val.(*unsubscriber).receiver.ExecuteWithParams(msg...)
+		val.(*unsubscriber).fiber.(fiber.IFiber).Enqueue(val.(*unsubscriber).receiver.PaddingFunc, msg...)
 	}
 }
 
-func (c *channel) Unsubscribe(disposable system.IDisposable) {
-	//將訂閱的方法移除
-	c.subscribers.Remove(disposable.IdentifyId())
+func (c *channel) unsubscribe(disposable system.IDisposable) {
+	//Remove the subscriber
+	if val, ok := c.subscribers.Get(disposable.IdentifyId()); ok {
+		val.(*unsubscriber).fiber.DeregisterSubscription(val.(*unsubscriber))
+		c.subscribers.Remove(disposable.IdentifyId())
+	}
 }
 
 func (c *channel) NumSubscribers() int {
