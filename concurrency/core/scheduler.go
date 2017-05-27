@@ -34,14 +34,12 @@ func (s *Scheduler) Schedule(firstInMs int64, taskFun interface{}, params ...int
 
 func (s *Scheduler) ScheduleOnInterval(firstInMs int64, regularInMs int64, taskFun interface{}, params ...interface{}) (d system.IDisposable) {
 	pending := newTimerTask(s, Task{PaddingFunc: taskFun, FuncParams: params}, firstInMs, regularInMs)
-	//log.Infof("addPending pending:%p",&pending)
 	s.addPending(pending)
 	return pending
 }
 
 //實作 ISchedulerRegistry.Enqueue
 func (s *Scheduler) Enqueue(taskFun interface{}, params ...interface{}) {
-	//s.fiber.Enqueue(taskFun, params...)
 	s.fiber.EnqueueWithTask(Task{FuncParams: params, PaddingFunc: taskFun})
 }
 

@@ -40,3 +40,9 @@ type IExecutor interface {
 	ExecuteTasks(t []Task)
 	ExecuteTask(t Task)
 }
+
+type IQueue interface {
+	Enqueue(t Task)
+	DequeueAll() ([]Task, bool)
+	Count() int
+}

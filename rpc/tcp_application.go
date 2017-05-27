@@ -72,7 +72,6 @@ func (t *tcpApplication) Start() {
 		log.Printf("ListenTCP error => %v", err)
 		return
 	}
-
 	go func() {
 		for {
 			conn, err := t.listener.AcceptTCP()
