@@ -63,7 +63,7 @@ func (g *GoroutineSingle) Dispose() {
 }
 
 func (g *GoroutineSingle) Enqueue(taskFun interface{}, params ...interface{}) {
-	g.EnqueueWithTask(core.Task{PaddingFunc: taskFun, FuncParams: params})
+	g.EnqueueWithTask(core.Task{Func: taskFun, Params: params})
 }
 
 func (g *GoroutineSingle) EnqueueWithTask(task core.Task) {

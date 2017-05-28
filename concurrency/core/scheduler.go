@@ -36,7 +36,7 @@ func NewScheduler(executionState IExecutionContext) *Scheduler {
 
 func (s *Scheduler) Schedule(firstInMs int64, taskFun interface{}, params ...interface{}) (d system.IDisposable) {
     if firstInMs <= 0 {
-        pendingAction := newPendingTask(Task{PaddingFunc: taskFun, FuncParams: params})
+        pendingAction := newPendingTask(Task{Func: taskFun, Params: params})
         s.Enqueue(pendingAction.Execute)
         return pendingAction
     }
@@ -44,14 +44,14 @@ func (s *Scheduler) Schedule(firstInMs int64, taskFun interface{}, params ...int
 }
 
 func (s *Scheduler) ScheduleOnInterval(firstInMs int64, regularInMs int64, taskFun interface{}, params ...interface{}) (d system.IDisposable) {
-    pending := newTimerTask(s, Task{PaddingFunc: taskFun, FuncParams: params}, firstInMs, regularInMs)
+    pending := newTimerTask(s, Task{Func: taskFun, Params: params}, firstInMs, regularInMs)
     s.addPending(pending)
     return pending
 }
 
 //實作 ISchedulerRegistry.Enqueue
 func (s *Scheduler) Enqueue(taskFun interface{}, params ...interface{}) {
-    s.EnqueueWithTask(Task{FuncParams: params, PaddingFunc: taskFun})
+    s.EnqueueWithTask(Task{Params: params, Func: taskFun})
 }
 
 func (s *Scheduler) EnqueueWithTask(task Task) {

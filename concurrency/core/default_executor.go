@@ -4,12 +4,11 @@ import "reflect"
 
 type IExecutor interface {
 	ExecuteTasks(t []Task)
-	ExecuteTask(t Task)
 }
 
 type Task struct {
-	PaddingFunc interface{}
-	FuncParams  []interface{}
+	Func   interface{}
+	Params []interface{}
 }
 
 type defaultExecutor struct {
@@ -24,9 +23,9 @@ func (d defaultExecutor) ExecuteTasks(tasks []Task) {
 }
 
 func (t Task) Execute() {
-	execFunc := reflect.ValueOf(t.PaddingFunc)
-	params := make([]reflect.Value, len(t.FuncParams))
-	for k, param := range t.FuncParams {
+	execFunc := reflect.ValueOf(t.Func)
+	params := make([]reflect.Value, len(t.Params))
+	for k, param := range t.Params {
 		params[k] = reflect.ValueOf(param)
 	}
 	func(in []reflect.Value) { _ = execFunc.Call(in) }(params)

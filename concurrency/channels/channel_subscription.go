@@ -25,7 +25,7 @@ func NewChannelSubscription(fiber fiber.IFiber, task core.Task) *channelSubscrip
 }
 
 func (c *channelSubscription) OnMessageOnProducerThread(msg ...interface{}) {
-	c.fiber.Enqueue(c.receiver.PaddingFunc, msg...)
+	c.fiber.Enqueue(c.receiver.Func, msg...)
 }
 
 //實作 IProducerThreadSubscriber.Subscriptions

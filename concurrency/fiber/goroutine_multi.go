@@ -52,7 +52,7 @@ func (g *GoroutineMulti) Dispose() {
 }
 
 func (g *GoroutineMulti) Enqueue(taskFun interface{}, params ...interface{}) {
-	g.EnqueueWithTask(core.Task{PaddingFunc: taskFun, FuncParams: params})
+	g.EnqueueWithTask(core.Task{Func: taskFun, Params: params})
 }
 
 func (g *GoroutineMulti) EnqueueWithTask(task core.Task) {
@@ -110,5 +110,5 @@ func (g *GoroutineMulti) flush() {
 }
 
 func (g GoroutineMulti) run(taskFun interface{}) {
-	go g.executor.ExecuteTask(core.Task{PaddingFunc: taskFun})
+	go core.Task{Func: taskFun}.Execute()
 }

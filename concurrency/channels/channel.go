@@ -21,12 +21,12 @@ func NewChannel() *channel {
 }
 
 func (c *channel) Subscribe(fiber fiber.IFiber, taskFun interface{}, params ...interface{}) system.IDisposable {
-	subscription := NewChannelSubscription(fiber, core.Task{PaddingFunc: taskFun, FuncParams: params})
+	subscription := NewChannelSubscription(fiber, core.Task{Func: taskFun, Params: params})
 	return c.SubscribeOnProducerThreads(subscription)
 }
 
 func (c *channel) SubscribeOnProducerThreads(subscriber IProducerThreadSubscriber) system.IDisposable {
-	job := core.Task{PaddingFunc: subscriber.ReceiveOnProducerThread}
+	job := core.Task{Func: subscriber.ReceiveOnProducerThread}
 	return c.subscribeOnProducerThreads(job, subscriber.Subscriptions())
 }
 
@@ -42,7 +42,7 @@ func (c *channel) subscribeOnProducerThreads(subscriber core.Task, fiber core.IS
 
 func (c *channel) Publish(msg ...interface{}) {
 	for _, val := range c.subscribers.Items() {
-		val.(*unsubscriber).fiber.(fiber.IFiber).Enqueue(val.(*unsubscriber).receiver.PaddingFunc, msg...)
+		val.(*unsubscriber).fiber.(fiber.IFiber).Enqueue(val.(*unsubscriber).receiver.Func, msg...)
 	}
 }
 
