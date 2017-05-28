@@ -18,13 +18,9 @@ type defaultExecutor struct {
 func NewDefaultExecutor() defaultExecutor { return defaultExecutor{} }
 
 func (d defaultExecutor) ExecuteTasks(tasks []Task) {
-	for i := range tasks {
-		d.ExecuteTask(tasks[i])
+	for _,task := range tasks {
+		task.Execute()
 	}
-}
-
-func (defaultExecutor) ExecuteTask(task Task) {
-	task.Execute()
 }
 
 func (t Task) Execute() {
