@@ -2,6 +2,11 @@ package core
 
 import "reflect"
 
+type IExecutor interface {
+	ExecuteTasks(t []Task)
+	ExecuteTask(t Task)
+}
+
 type Task struct {
 	PaddingFunc interface{}
 	FuncParams  []interface{}

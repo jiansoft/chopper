@@ -24,7 +24,6 @@ func NewDisposer() *Disposer {
 
 func (d *Disposer) Add(disposable system.IDisposable) {
 	d.disposables.Set(disposable.IdentifyId(), disposable)
-
 }
 
 func (d *Disposer) Remove(disposable system.IDisposable) {

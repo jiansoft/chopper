@@ -2,73 +2,86 @@ package core
 
 import "github.com/jiansoft/chopper/system"
 
+type IScheduler interface {
+    Schedule(firstInMs int64, taskFun interface{}, params ...interface{}) (d system.IDisposable)
+    ScheduleOnInterval(firstInMs int64, regularInMs int64, taskFun interface{}, params ...interface{}) (d system.IDisposable)
+    Start()
+    Stop()
+    Dispose()
+}
+
+type ISchedulerRegistry interface {
+    Enqueue(taskFun interface{}, params ...interface{})
+    EnqueueWithTask(task Task)
+    Remove(d system.IDisposable)
+}
+
 type Scheduler struct {
-	fiber       IExecutionContext
-	running     bool
-	isDispose   bool
-	disposabler *Disposer
+    fiber       IExecutionContext
+    running     bool
+    isDispose   bool
+    disposabler *Disposer
 }
 
 func (s *Scheduler) init(executionState IExecutionContext) *Scheduler {
-	s.fiber = executionState
-	s.running = true
-	s.disposabler = NewDisposer()
-	return s
+    s.fiber = executionState
+    s.running = true
+    s.disposabler = NewDisposer()
+    return s
 }
 
 func NewScheduler(executionState IExecutionContext) *Scheduler {
-	return new(Scheduler).init(executionState)
+    return new(Scheduler).init(executionState)
 }
 
 func (s *Scheduler) Schedule(firstInMs int64, taskFun interface{}, params ...interface{}) (d system.IDisposable) {
-	if firstInMs <= 0 {
-		pendingAction := newPendingTask(Task{PaddingFunc: taskFun, FuncParams: params})
-		s.fiber.Enqueue(pendingAction.Execute)
-		return pendingAction
-	}
-	pending := newTimerTask(s, Task{PaddingFunc: taskFun, FuncParams: params}, firstInMs, -1)
-	//log.Infof("addPending pending:%p",&pending)
-	s.addPending(pending)
-	return pending
+    if firstInMs <= 0 {
+        pendingAction := newPendingTask(Task{PaddingFunc: taskFun, FuncParams: params})
+        s.Enqueue(pendingAction.Execute)
+        return pendingAction
+    }
+    return s.ScheduleOnInterval(firstInMs, -1, taskFun, params...)
 }
 
 func (s *Scheduler) ScheduleOnInterval(firstInMs int64, regularInMs int64, taskFun interface{}, params ...interface{}) (d system.IDisposable) {
-	pending := newTimerTask(s, Task{PaddingFunc: taskFun, FuncParams: params}, firstInMs, regularInMs)
-	s.addPending(pending)
-	return pending
+    pending := newTimerTask(s, Task{PaddingFunc: taskFun, FuncParams: params}, firstInMs, regularInMs)
+    s.addPending(pending)
+    return pending
 }
 
 //實作 ISchedulerRegistry.Enqueue
 func (s *Scheduler) Enqueue(taskFun interface{}, params ...interface{}) {
-	s.fiber.EnqueueWithTask(Task{FuncParams: params, PaddingFunc: taskFun})
+    s.EnqueueWithTask(Task{FuncParams: params, PaddingFunc: taskFun})
+}
+
+func (s *Scheduler) EnqueueWithTask(task Task) {
+    s.fiber.EnqueueWithTask(task)
 }
 
 //實作 ISchedulerRegistry.Remove
 func (s *Scheduler) Remove(d system.IDisposable) {
-	s.fiber.Enqueue(s.disposabler.Remove, d)
+    s.fiber.Enqueue(s.disposabler.Remove, d)
 }
 
 func (s *Scheduler) Start() {
-	s.running = true
-	s.isDispose = false
+    s.running = true
+    s.isDispose = false
 }
 
 func (s *Scheduler) Stop() {
-	s.running = false
+    s.running = false
 }
 
 func (s *Scheduler) Dispose() {
-	s.Stop()
-	s.isDispose = true
-	s.disposabler.Dispose()
+    s.Stop()
+    s.isDispose = true
+    s.disposabler.Dispose()
 }
 
 func (s *Scheduler) addPending(pending *timerTask) {
-	s.fiber.Enqueue(func() {
-		if s.isDispose {
-			return
-		}
-		s.disposabler.Add(pending)
-		pending.schedule()
-	})
+    if s.isDispose {
+        return
+    }
+    s.disposabler.Add(pending)
+    pending.schedule()
 }

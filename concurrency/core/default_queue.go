@@ -4,6 +4,12 @@ import (
 	"sync"
 )
 
+type IQueue interface {
+	Enqueue(t Task)
+	DequeueAll() ([]Task, bool)
+	Count() int
+}
+
 type defaultQueue struct {
 	executor     IExecutor
 	paddingTasks []Task
