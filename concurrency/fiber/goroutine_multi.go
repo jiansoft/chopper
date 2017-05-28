@@ -48,7 +48,7 @@ func (g *GoroutineMulti) Dispose() {
 	g.Stop()
 	g.scheduler.Dispose()
 	g.subscriptions.Dispose()
-	g.queue.DequeueAll()
+    g.queue.Dispose()
 }
 
 func (g *GoroutineMulti) Enqueue(taskFun interface{}, params ...interface{}) {

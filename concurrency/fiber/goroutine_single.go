@@ -60,6 +60,7 @@ func (g *GoroutineSingle) Dispose() {
 	g.lock.Unlock()
 	g.scheduler.Dispose()
 	g.subscriptions.Dispose()
+	g.queue.Dispose()
 }
 
 func (g *GoroutineSingle) Enqueue(taskFun interface{}, params ...interface{}) {

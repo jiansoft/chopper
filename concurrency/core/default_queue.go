@@ -1,52 +1,54 @@
 package core
 
 import (
-	"sync"
+    "sync"
 )
 
 type IQueue interface {
-	Enqueue(t Task)
-	DequeueAll() ([]Task, bool)
-	Count() int
+    Enqueue(t Task)
+    DequeueAll() ([]Task, bool)
+    Count() int
+    Dispose()
 }
 
 type defaultQueue struct {
-	executor     IExecutor
-	paddingTasks []Task
-	toDoTasks    []Task
-	lock         *sync.Mutex
-	cond         *sync.Cond
+    paddingTasks []Task
+    toDoTasks    []Task
+    lock         *sync.Mutex
 }
 
 func (d *defaultQueue) init() *defaultQueue {
-	d.toDoTasks = []Task{}
-	d.executor = NewDefaultExecutor()
-	d.paddingTasks = []Task{}
-	d.lock = new(sync.Mutex)
-	d.cond = sync.NewCond(d.lock)
-	return d
+    d.toDoTasks = []Task{}
+    d.paddingTasks = []Task{}
+    d.lock = new(sync.Mutex)
+    return d
 }
 
 func NewDefaultQueue() *defaultQueue {
-	return new(defaultQueue).init()
+    return new(defaultQueue).init()
+}
+
+func (d *defaultQueue) Dispose() {
+    d.paddingTasks = nil
+    d.toDoTasks = nil
 }
 
 func (d *defaultQueue) Enqueue(task Task) {
-	d.lock.Lock()
-	d.paddingTasks = append(d.paddingTasks, task)
-	d.lock.Unlock()
+    d.lock.Lock()
+    d.paddingTasks = append(d.paddingTasks, task)
+    d.lock.Unlock()
 }
 
 func (d *defaultQueue) DequeueAll() ([]Task, bool) {
-	d.lock.Lock()
-	defer d.lock.Unlock()
-	d.toDoTasks, d.paddingTasks = d.paddingTasks, d.toDoTasks
-	d.paddingTasks = d.paddingTasks[:0]
-	return d.toDoTasks, len(d.toDoTasks) > 0
+    d.lock.Lock()
+    defer d.lock.Unlock()
+    d.toDoTasks, d.paddingTasks = d.paddingTasks, d.toDoTasks
+    d.paddingTasks = d.paddingTasks[:0]
+    return d.toDoTasks, len(d.toDoTasks) > 0
 }
 
 func (d *defaultQueue) Count() int {
-	d.lock.Lock()
-	defer d.lock.Unlock()
-	return len(d.paddingTasks)
+    d.lock.Lock()
+    defer d.lock.Unlock()
+    return len(d.paddingTasks)
 }
