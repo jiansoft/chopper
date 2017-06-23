@@ -28,8 +28,15 @@ import (
     "github.com/jiansoft/chopper/concurrency/fiber"
 )
 
-cron.Every(1).Days().AtTime(16, 50, 0).Do(func(s string){log.Infof("I am %s now:%v", s, time.Now())}, "jIAn")
-cron.Every(10).Seconds().Do(func(s string){log.Infof("I am %s now:%v", s, time.Now())}, "jIAn")
+cron.Every(1).Friday().AtTime(11, 50, 0).Do(runCron, "Friday")
+cron.Every(1).Days().AtTime(11, 50, 0).Do(runCron, "Days")
+cron.Every(1).Hour().AtTime(0, 50, 0).Do(runCron, "Hour")
+cron.Every(1).Hours().Do(runCron, "Hours")
+cron.Every(1).Minutes().Do(runCron, "Minutes")
+
+func runCron(s string) {
+    log.Infof("I am %s CronTest %v", s, time.Now())
+}
 
 ```
 ## License
