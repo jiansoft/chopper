@@ -15,13 +15,14 @@ func (p *PendingTask) init(task Task) *PendingTask {
 	return p
 }
 
-func newPendingTask(task Task) *PendingTask {
+func NewPendingTask(task Task) *PendingTask {
 	return new(PendingTask).init(task)
 }
 
 func (p *PendingTask) Dispose() {
 	p.cancelled = true
 }
+
 func (p *PendingTask) IdentifyId() string {
 	return p.identifyId
 }

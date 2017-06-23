@@ -12,12 +12,6 @@ type ISubscriptionRegistry interface {
 	DeregisterSubscription(system.IDisposable)
 }
 
-//Action subscriber that receives actions on producer thread.
-type IProducerThreadSubscriber interface {
-	ReceiveOnProducerThread(msg interface{})
-	Subscriptions() ISubscriptionRegistry
-}
-
 type IExecutionContext interface {
 	Enqueue(taskFun interface{}, params ...interface{})
 	EnqueueWithTask(task Task)

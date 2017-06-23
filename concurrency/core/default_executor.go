@@ -11,13 +11,19 @@ type Task struct {
 	Params []interface{}
 }
 
+func NewTask(t interface{}, p ...interface{}) Task {
+	return Task{Func: t, Params: p}
+}
+
+//cronFun, params...
+
 type defaultExecutor struct {
 }
 
 func NewDefaultExecutor() defaultExecutor { return defaultExecutor{} }
 
 func (d defaultExecutor) ExecuteTasks(tasks []Task) {
-	for _,task := range tasks {
+	for _, task := range tasks {
 		task.Execute()
 	}
 }
