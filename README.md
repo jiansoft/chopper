@@ -28,6 +28,18 @@ import (
     "github.com/jiansoft/chopper/concurrency/fiber"
 )
 
+var runCronFiber = fiber.NewGoroutineMulti()
+runCronFiber.Start()
+
+//Make a cron that will be executed everyday
+b := cron.Every(1).Days().AtTime(15, 30, 4).Do(runCron, "Will be cancel")
+
+//After one second, this cron well be canceled  
+runCronFiber.Schedule(1000, func() {    
+    log.Infof("Dispose()")
+    b.Dispose()
+})
+    
 cron.Every(1).Friday().AtTime(11, 50, 0).Do(runCron, "Friday")
 cron.Every(1).Days().AtTime(11, 50, 0).Do(runCron, "Days")
 cron.Every(1).Hour().AtTime(0, 50, 0).Do(runCron, "Hour")
