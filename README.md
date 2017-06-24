@@ -28,23 +28,49 @@ import (
     "github.com/jiansoft/chopper/concurrency/fiber"
 )
 
+//Make a fiber
 var runCronFiber = fiber.NewGoroutineMulti()
 runCronFiber.Start()
 
-//Make a cron that will be executed everyday
-b := cron.Every(1).Days().AtTime(15, 30, 4).Do(runCron, "Will be cancel")
+//Make a cron that will be executed after 2000 ms
+a := cron.Delay(2000).Do(runCron, "a Delay 2000")
+ 
+//Make a cron that will be executed everyday at 15:30:04(HH:mm:ss)
+b := cron.Every(1).Days().At(15, 30, 4).Do(runCron, "Will be cancel")
 
-//After one second, this cron well be canceled  
-runCronFiber.Schedule(1000, func() {    
-    log.Infof("Dispose()")
+//After one second, a & b crons well be canceled by fiber 
+runCronFiber.Schedule(1000, func() {
+    log.Infof("a & b are dispose")
     b.Dispose()
+    a.Dispose()
 })
-    
+
+//Every friday do once at 11:50:00(HH:mm:ss).
 cron.Every(1).Friday().At(11, 50, 0).Do(runCron, "Friday")
+
+//Every day do once at 11:50:00(HH:mm:ss).
 cron.Every(1).Days().At(11, 50, 0).Do(runCron, "Days")
+
+//Every hour do once at N:50:00(HH:mm:ss).
 cron.Every(1).Hour().At(0, 50, 0).Do(runCron, "Hour")
-cron.Every(1).Hours().Do(runCron, "Hours")
-cron.Every(1).Minutes().Do(runCron, "Minutes")
+
+//Every N hours do once.
+cron.Every(12).Hours().Do(runCron, "Hours")
+
+//Every N minutes do once.
+cron.Every(30).Minutes().Do(runCron, "Minutes")
+
+//Every N seconds do once.
+cron.Every(100).Seconds().Do(runCron, "Seconds")
+
+// Use a new cron executor
+newCronDelay := cron.NewCronDelayExecutor()
+newCronDelay.Delay(2000).Do(runCron, "newDelayCron Delay 2000 in Ms")
+
+// Use a new cron executor
+newCronScheduler := cron.NewCronSchedulerExecutor()
+newCronScheduler.Every(1).Hours().Do(runCron, "newCronScheduler Hours")
+newCronScheduler.Every(1).Minutes().Do(runCron, "newCronScheduler Minutes")
 
 func runCron(s string) {
     log.Infof("I am %s CronTest %v", s, time.Now())

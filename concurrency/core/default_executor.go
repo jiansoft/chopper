@@ -15,8 +15,6 @@ func NewTask(t interface{}, p ...interface{}) Task {
 	return Task{Func: t, Params: p}
 }
 
-//cronFun, params...
-
 type defaultExecutor struct {
 }
 

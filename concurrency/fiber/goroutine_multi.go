@@ -48,11 +48,11 @@ func (g *GoroutineMulti) Dispose() {
 	g.Stop()
 	g.scheduler.Dispose()
 	g.subscriptions.Dispose()
-    g.queue.Dispose()
+	g.queue.Dispose()
 }
 
 func (g *GoroutineMulti) Enqueue(taskFun interface{}, params ...interface{}) {
-	g.EnqueueWithTask(core.NewTask(taskFun,params...))
+	g.EnqueueWithTask(core.NewTask(taskFun, params...))
 }
 
 func (g *GoroutineMulti) EnqueueWithTask(task core.Task) {
@@ -66,7 +66,7 @@ func (g *GoroutineMulti) EnqueueWithTask(task core.Task) {
 		return
 	}
 	//g.run(g.flush)
-    go g.flush()
+	go g.flush()
 	g.flushPending = true
 }
 
@@ -103,11 +103,10 @@ func (g *GoroutineMulti) flush() {
 	defer g.lock.Unlock()
 	if g.queue.Count() > 0 {
 		//It has new task enqueue when clear tasks
-        go g.flush()
+		go g.flush()
 		//g.run(g.flush)
 	} else {
 		//Task is empty
 		g.flushPending = false
 	}
 }
-

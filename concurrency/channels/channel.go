@@ -31,7 +31,6 @@ func (c *channel) SubscribeOnProducerThreads(subscriber IProducerThreadSubscribe
 }
 
 func (c *channel) subscribeOnProducerThreads(subscriber core.Task, fiber core.ISubscriptionRegistry) system.IDisposable {
-	//再封裝一層
 	unsubscriber := NewUnsubscriber(subscriber, c, fiber)
 	//將訂閱者的方法註冊到 IFiber內 ，當 IFiber.Dispose()時，同步將訂閱的方法移除
 	fiber.RegisterSubscription(unsubscriber)
