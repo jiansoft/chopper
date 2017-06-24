@@ -40,9 +40,9 @@ runCronFiber.Schedule(1000, func() {
     b.Dispose()
 })
     
-cron.Every(1).Friday().AtTime(11, 50, 0).Do(runCron, "Friday")
-cron.Every(1).Days().AtTime(11, 50, 0).Do(runCron, "Days")
-cron.Every(1).Hour().AtTime(0, 50, 0).Do(runCron, "Hour")
+cron.Every(1).Friday().At(11, 50, 0).Do(runCron, "Friday")
+cron.Every(1).Days().At(11, 50, 0).Do(runCron, "Days")
+cron.Every(1).Hour().At(0, 50, 0).Do(runCron, "Hour")
 cron.Every(1).Hours().Do(runCron, "Hours")
 cron.Every(1).Minutes().Do(runCron, "Minutes")
 
