@@ -32,10 +32,15 @@ func newTimerTask(fiber ISchedulerRegistry, task Task, firstInMs int64, interval
 
 func (t *timerTask) Dispose() {
 	t.cancelled = true
-	t.timer.Stop()
-	t.timer = nil
-	t.scheduler.Remove(t)
-	t.scheduler = nil
+	if nil != t.timer {
+		t.timer.Stop()
+		t.timer = nil
+	}
+	if nil != t.scheduler {
+		t.scheduler.Remove(t)
+		t.scheduler = nil
+	}
+
 }
 
 func (t timerTask) IdentifyId() string {

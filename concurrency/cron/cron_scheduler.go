@@ -30,7 +30,7 @@ func Every(interval int64) *CronScheduler {
 }
 
 func (c *CronSchedulerExecutor) Every(interval int64) *CronScheduler {
-	return newCron(interval, c.fiber)
+	return NewCron(interval, c.fiber)
 }
 
 type CronScheduler struct {
@@ -58,7 +58,7 @@ func (c *CronScheduler) init(intervel int64, fiber fiber.IFiber) *CronScheduler 
 	return c
 }
 
-func newCron(intervel int64, fiber fiber.IFiber) *CronScheduler {
+func NewCron(intervel int64, fiber fiber.IFiber) *CronScheduler {
 	return new(CronScheduler).init(intervel, fiber)
 }
 
@@ -73,12 +73,6 @@ func (c CronScheduler) IdentifyId() string {
 
 func (c *CronScheduler) Days() *CronScheduler {
 	c.unit = "days"
-	return c
-}
-
-func (c *CronScheduler) Hour() *CronScheduler {
-	c.interval = 1
-	c.unit = "hour"
 	return c
 }
 
@@ -97,57 +91,10 @@ func (c *CronScheduler) Seconds() *CronScheduler {
 	return c
 }
 
-func (c *CronScheduler) Sunday() *CronScheduler {
-	c.interval = 1
-	c.weekday = 0
-	c.unit = "weeks"
-	return c
-}
-
-func (c *CronScheduler) Monday() *CronScheduler {
-	c.interval = 1
-	c.weekday = 1
-	c.unit = "weeks"
-	return c
-}
-
-func (c *CronScheduler) Tuesday() *CronScheduler {
-	c.interval = 1
-	c.weekday = 2
-	c.unit = "weeks"
-	return c
-}
-
-func (c *CronScheduler) Wednesday() *CronScheduler {
-	c.interval = 1
-	c.weekday = 3
-	c.unit = "weeks"
-	return c
-}
-
-func (c *CronScheduler) Thursday() *CronScheduler {
-	c.interval = 1
-	c.weekday = 4
-	c.unit = "weeks"
-	return c
-}
-
-func (c *CronScheduler) Friday() *CronScheduler {
-	c.interval = 1
-	c.weekday = 5
-	c.unit = "weeks"
-	return c
-}
-
-func (c *CronScheduler) Saturday() *CronScheduler {
-	c.interval = 1
-	c.weekday = 6
-	c.unit = "weeks"
-	return c
-}
-
 func (c *CronScheduler) At(hour int, minute int, second int) *CronScheduler {
-	c.hour = hour % 24
+    if c.unit != "hour" {
+        c.hour = hour % 24
+    }
 	c.minute = minute % 60
 	c.second = second % 60
 	return c
@@ -166,7 +113,7 @@ func (c *CronScheduler) Do(taskFun interface{}, params ...interface{}) system.ID
 		}
 		firstInMs = int64(mock.Sub(time.Now())) / (1000 * 1000)
 		interval = c.interval * 60 * 60 * 24 * 7 * 1000
-		c.taskDisposer = cronSchedulerExecutor.fiber.ScheduleOnInterval(firstInMs, interval, c.task.Execute)
+		c.taskDisposer = c.fiber.ScheduleOnInterval(firstInMs, interval, c.task.Execute)
 		return c
 	case "days":
 		if c.second < 0 || c.minute < 0 || c.hour < 0 {
@@ -185,7 +132,7 @@ func (c *CronScheduler) Do(taskFun interface{}, params ...interface{}) system.ID
 			firstInMs = int64(mock.Sub(time.Now())) / (1000 * 1000)
 		}
 		interval = c.interval * 60 * 60 * 24 * 1000
-		c.taskDisposer = cronSchedulerExecutor.fiber.ScheduleOnInterval(firstInMs, interval, c.task.Execute)
+		c.taskDisposer = c.fiber.ScheduleOnInterval(firstInMs, interval, c.task.Execute)
 		return c
 	case "hour":
 		interval = c.interval * 60 * 60 * 1000
@@ -197,21 +144,24 @@ func (c *CronScheduler) Do(taskFun interface{}, params ...interface{}) system.ID
 			}
 			firstInMs = int64(mock.Sub(time.Now())) / (1000 * 1000)
 		}
-		c.taskDisposer = cronSchedulerExecutor.fiber.ScheduleOnInterval(firstInMs, interval, c.task.Execute)
+		c.taskDisposer = c.fiber.ScheduleOnInterval(firstInMs, interval, c.task.Execute)
 		return c
 	case "hours":
 		interval = c.interval * 60 * 60 * 1000
 		firstInMs = interval
-		c.taskDisposer = cronSchedulerExecutor.fiber.ScheduleOnInterval(firstInMs, interval, c.task.Execute)
+		c.taskDisposer = c.fiber.ScheduleOnInterval(firstInMs, interval, c.task.Execute)
 	case "minutes":
 		interval = c.interval * 60 * 1000
 		firstInMs = interval
-		c.taskDisposer = cronSchedulerExecutor.fiber.ScheduleOnInterval(firstInMs, interval, c.task.Execute)
+		c.taskDisposer = c.fiber.ScheduleOnInterval(firstInMs, interval, c.task.Execute)
 		return c
 	case "seconds":
 		interval = c.interval * 1000
 		firstInMs = interval
-		c.taskDisposer = cronSchedulerExecutor.fiber.ScheduleOnInterval(firstInMs, interval, c.task.Execute)
+		c.taskDisposer = c.fiber.ScheduleOnInterval(firstInMs, interval, c.task.Execute)
+		return c
+	case "delay":
+		c.taskDisposer = c.fiber.Schedule(c.interval, c.task.Execute)
 		return c
 	}
 	return nil

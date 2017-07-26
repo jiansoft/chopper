@@ -46,13 +46,13 @@ runCronFiber.Schedule(1000, func() {
 })
 
 //Every friday do once at 11:50:00(HH:mm:ss).
-cron.Every(1).Friday().At(11, 50, 0).Do(runCron, "Friday")
+cron.EveryFriday().At(11, 50, 0).Do(runCron, "Friday")
 
 //Every day do once at 11:50:00(HH:mm:ss).
 cron.Every(1).Days().At(11, 50, 0).Do(runCron, "Days")
 
-//Every hour do once at N:50:00(HH:mm:ss).
-cron.Every(1).Hour().At(0, 50, 0).Do(runCron, "Hour")
+//Every hour do once at N:52:20(HH:mm:ss).
+cron.EveryHour().At(0, 52, 20).Do(runCron, "EveryHour")
 
 //Every N hours do once.
 cron.Every(12).Hours().Do(runCron, "Hours")
