@@ -4,32 +4,32 @@ import (
 	"github.com/jiansoft/chopper/concurrency/fiber"
 )
 
-var cronDelayExecutor = NewCronDelayExecutor()
+var delaySchedulerExecutor = NewJobDelaySchedulerExecutor()
 
-type CronDelayExecutor struct {
+type jobDelaySchedulerExecutor struct {
 	fiber fiber.IFiber
 }
 
-func NewCronDelayExecutor() *CronDelayExecutor {
-	return new(CronDelayExecutor).init()
+func NewJobDelaySchedulerExecutor() *jobDelaySchedulerExecutor {
+	return new(jobDelaySchedulerExecutor).init()
 }
 
-func (c *CronDelayExecutor) init() *CronDelayExecutor {
+func (c *jobDelaySchedulerExecutor) init() *jobDelaySchedulerExecutor {
 	c.fiber = fiber.NewGoroutineMulti()
 	c.fiber.Start()
 	return c
 }
 
-func Delay(delayInMs int64) *CronScheduler {
-	return cronDelayExecutor.Delay(delayInMs)
-}
-
-func (c *CronDelayExecutor) Delay(delayInMs int64) *CronScheduler {
+func (c *jobDelaySchedulerExecutor) Delay(delayInMs int64) *Job {
 	return newCronDelay(delayInMs)
 }
 
-func newCronDelay(delayInMs int64) *CronScheduler {
-	c := NewCron(delayInMs, cronDelayExecutor.fiber)
+func Delay(delayInMs int64) *Job {
+	return delaySchedulerExecutor.Delay(delayInMs)
+}
+
+func newCronDelay(delayInMs int64) *Job {
+	c := NewJob(delayInMs, delaySchedulerExecutor.fiber)
 	c.unit = "delay"
 	return c
 }

@@ -8,9 +8,9 @@ import (
 )
 
 type GoroutineMulti struct {
-	queue          core.IQueue
-	scheduler      core.IScheduler
-	executor       core.IExecutor
+	queue     core.IQueue
+	scheduler core.IScheduler
+	//executor       core.IExecutor
 	executionState executionState
 	lock           *sync.Mutex
 	subscriptions  *core.Disposer
@@ -21,7 +21,7 @@ func (g *GoroutineMulti) init() *GoroutineMulti {
 	g.queue = core.NewDefaultQueue()
 	g.executionState = created
 	g.scheduler = core.NewScheduler(g)
-	g.executor = core.NewDefaultExecutor()
+	//g.executor = core.NewDefaultExecutor()
 	g.subscriptions = core.NewDisposer()
 	g.lock = new(sync.Mutex)
 	return g
@@ -59,15 +59,14 @@ func (g *GoroutineMulti) EnqueueWithTask(task core.Task) {
 	if g.executionState != running {
 		return
 	}
-	g.lock.Lock()
-	defer g.lock.Unlock()
+	//g.lock.Lock()
+	//defer g.lock.Unlock()
 	g.queue.Enqueue(task)
 	if g.flushPending {
 		return
 	}
-	//g.run(g.flush)
-	go g.flush()
 	g.flushPending = true
+	go g.flush()
 }
 
 func (g *GoroutineMulti) Schedule(firstInMs int64, taskFun interface{}, params ...interface{}) (d system.IDisposable) {
@@ -98,13 +97,15 @@ func (g *GoroutineMulti) flush() {
 		g.flushPending = false
 		return
 	}
-	g.executor.ExecuteTasks(toDoTasks)
+	//g.executor.ExecuteTasks(toDoTasks)
+	for _, task := range toDoTasks {
+		go task.Execute()
+	}
 	g.lock.Lock()
 	defer g.lock.Unlock()
 	if g.queue.Count() > 0 {
 		//It has new task enqueue when clear tasks
 		go g.flush()
-		//g.run(g.flush)
 	} else {
 		//Task is empty
 		g.flushPending = false
