@@ -6,17 +6,17 @@ import (
 	"github.com/jiansoft/chopper/concurrency/fiber"
 )
 
-var everySchedulerExecutor = NewJobEverySchedulerExecutor()
+var everyExecutor = NewEverySchedulerExecutor()
 
-type jobEverySchedulerExecutor struct {
+type everySchedulerExecutor struct {
 	fiber fiber.IFiber
 }
 
-func NewJobEverySchedulerExecutor() *jobEverySchedulerExecutor {
-	return new(jobEverySchedulerExecutor).init()
+func NewEverySchedulerExecutor() *everySchedulerExecutor {
+	return new(everySchedulerExecutor).init()
 }
 
-func (c *jobEverySchedulerExecutor) init() *jobEverySchedulerExecutor {
+func (c *everySchedulerExecutor) init() *everySchedulerExecutor {
 	c.fiber = fiber.NewGoroutineMulti()
 	c.fiber.Start()
 	return c
@@ -51,18 +51,18 @@ func EverySaturday() *Job {
 }
 
 func newCronWeekday(weekday time.Weekday) *Job {
-	c := NewJob(1, everySchedulerExecutor.fiber)
+	c := NewJob(1, everyExecutor.fiber)
 	c.unit = "weeks"
 	c.weekday = weekday
 	return c
 }
-
-func newCronHour() *Job {
-	c := NewJob(1, everySchedulerExecutor.fiber)
-	c.unit = "hour"
-	return c
-}
-
-func EveryHour() *Job {
-	return newCronHour()
-}
+//
+//func newCronHour() *Job {
+//	c := NewJob(1, everyExecutor.fiber)
+//	c.unit = "hours"
+//	return c
+//}
+//
+//func EveryHour() *Job {
+//	return newCronHour()
+//}
