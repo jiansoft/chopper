@@ -99,7 +99,7 @@ func (g *GoroutineMulti) flush() {
 	}
 	//g.executor.ExecuteTasks(toDoTasks)
 	for _, task := range toDoTasks {
-		go task.Execute()
+		go task.Run()
 	}
 	g.lock.Lock()
 	defer g.lock.Unlock()

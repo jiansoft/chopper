@@ -30,6 +30,6 @@ func Delay(delayInMs int64) *Job {
 
 func newCronDelay(delayInMs int64) *Job {
 	c := NewJob(delayInMs, delayExecutor.fiber)
-	c.unit = "delay"
+	c.unit = delay
 	return c
 }

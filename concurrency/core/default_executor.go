@@ -22,11 +22,11 @@ func NewDefaultExecutor() defaultExecutor { return defaultExecutor{} }
 
 func (d defaultExecutor) ExecuteTasks(tasks []Task) {
 	for _, task := range tasks {
-		task.Execute()
+		task.Run()
 	}
 }
 
-func (t Task) Execute() {
+func (t Task) Run() {
 	execFunc := reflect.ValueOf(t.Func)
 	params := make([]reflect.Value, len(t.Params))
 	for k, param := range t.Params {

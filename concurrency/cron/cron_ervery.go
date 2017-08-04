@@ -52,10 +52,11 @@ func EverySaturday() *Job {
 
 func newCronWeekday(weekday time.Weekday) *Job {
 	c := NewJob(1, everyExecutor.fiber)
-	c.unit = "weeks"
+	c.unit = weeks
 	c.weekday = weekday
 	return c
 }
+
 //
 //func newCronHour() *Job {
 //	c := NewJob(1, everyExecutor.fiber)

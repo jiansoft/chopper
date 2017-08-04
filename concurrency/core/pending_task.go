@@ -31,5 +31,5 @@ func (p *PendingTask) Execute() {
 	if p.cancelled {
 		return
 	}
-	p.task.Execute()
+	p.task.Run()
 }
