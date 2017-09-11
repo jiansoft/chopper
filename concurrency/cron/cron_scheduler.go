@@ -106,14 +106,14 @@ func (c *Job) Seconds() *Job {
 }
 
 func (c *Job) At(hour int, minute int, second int) *Job {
-	c.hour = math.Abs(c.hour)
-	c.minute = math.Abs(c.minute)
-	c.second = math.Abs(c.second)
+	c.hour = math.Abs(hour)
+	c.minute = math.Abs(minute)
+	c.second = math.Abs(second)
 	if c.unit != hours {
-		c.hour = hour % 24
+		c.hour = c.hour % 24
 	}
-	c.minute = minute % 60
-	c.second = second % 60
+	c.minute = c.minute % 60
+	c.second = c.second % 60
 	return c
 }
 
