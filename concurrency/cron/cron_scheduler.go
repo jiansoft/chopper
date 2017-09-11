@@ -149,7 +149,7 @@ func (c *Job) Do(fun interface{}, params ...interface{}) system.IDisposable {
 		}
 		c.taskDisposer = c.fiber.Schedule(firstInMs, c.canDo)
 	case hours:
-		firstInMs = c.interval * 60 * 60 * 1000
+		//firstInMs = c.interval * 60 * 60 * 1000
 		if c.minute < 0 {
 			c.minute = now.Minute()
 		}
@@ -188,7 +188,7 @@ func (c *Job) canDo() {
 			c.nextRunTime = c.nextRunTime.AddDate(0, 0, int(c.interval))
 			// adjustTime = int64(c.nextRunTime.Sub(now) / 1000000)
 		case hours:
-			c.nextRunTime = c.nextRunTime.Add(time.Hour)
+			c.nextRunTime = c.nextRunTime.Add(time.Duration(c.interval) * time.Hour)
 			// adjustTime = int64(c.nextRunTime.Sub(now) / 1000000)
 		}
 	} else {
