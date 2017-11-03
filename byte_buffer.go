@@ -1,4 +1,4 @@
-package rpc
+package chopper
 
 type byteBuffer struct {
 	buffers   []byte

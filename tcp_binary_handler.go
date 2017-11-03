@@ -1,4 +1,4 @@
-package rpc
+package chopper
 
 type TcpBinaryHander struct {
 	buffer byteBuffer

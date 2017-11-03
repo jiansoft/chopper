@@ -1,12 +1,10 @@
-package rpc
+package chopper
 
 import (
 	"fmt"
 	"log"
 	"net"
 )
-
-//處理連線的 發送、接收、連入事件管理
 
 type tcpApplication struct {
 	bufferManager *BufferManager

@@ -1,9 +1,9 @@
-package rpc
+package chopper
 
 import (
 	"sync"
 
-	"github.com/jiansoft/chopper/collections"
+	"github.com/jiansoft/robin"
 )
 
 // This struct creates a single large buffer which can be divided up
@@ -16,7 +16,7 @@ type BufferManager struct {
 	bufferSize   int
 	totalBytes   int64
 	currentIndex int64
-	freeIndex    *collections.ConcurrentQueue
+	freeIndex    *robin.ConcurrentQueue
 	lock         *sync.Mutex
 }
 
@@ -30,7 +30,7 @@ func (b *BufferManager) init(maxConnectCount int, bufferSize int) *BufferManager
 	//Current index of the underlying Byte array.
 	b.currentIndex = 0
 	//Pool of indexes for the Buffer Manager.
-	b.freeIndex = collections.NewConcurrentQueue()
+	b.freeIndex = robin.NewConcurrentQueue()
 	b.lock = new(sync.Mutex)
 	return b
 }
