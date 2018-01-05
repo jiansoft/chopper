@@ -41,7 +41,7 @@ func NewBufferManager(maxConnectCount int, bufferSize int) *BufferManager {
 
 // Assigns a buffer from the buffer pool to the
 // specified peer struct
-func (b *BufferManager) SetBuffer(peer *ClientSession) {
+func (b *BufferManager) SetBuffer(peer *PeerSession) {
 	b.lock.Lock()
 	defer b.lock.Unlock()
 	offset, ok := b.freeIndex.TryDequeue()
@@ -65,7 +65,7 @@ func (b *BufferManager) SetBuffer(peer *ClientSession) {
 
 // Removes the buffer from a peer struct.
 // This frees the buffer back to the buffer pool
-func (b *BufferManager) FreeBuffer(peer *ClientSession) {
+func (b *BufferManager) FreeBuffer(peer *PeerSession) {
 	peer.buffers = nil
 	b.freeIndex.Enqueue(peer.bufferOffst)
 }

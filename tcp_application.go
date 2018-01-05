@@ -84,7 +84,7 @@ func (t *tcpApplication) Start() {
 	}()
 }
 
-func (t *tcpApplication) OnDisconnect(c *ClientSession) {
+func (t *tcpApplication) OnDisconnect(c *PeerSession) {
 	if c.bufferOffst >= 0 {
 		t.bufferManager.FreeBuffer(c)
 	}

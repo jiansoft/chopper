@@ -1,17 +1,17 @@
 package chopper
 
 type TcpBinaryHander struct {
-	buffer byteBuffer
-	done   func([]byte)
-	parse  func([]byte, int, int) int
+	buffer       byteBuffer
+	callBackFunc func([]byte)
+	parse        func([]byte, int, int) int
 }
 
-const headerSize int = 4
+const headerSize = 4
 
 func NewTcpBinaryHander(readDoneFunc func([]byte)) *TcpBinaryHander {
 	obj := new(TcpBinaryHander)
 	obj.restart()
-	obj.done = readDoneFunc
+	obj.callBackFunc = readDoneFunc
 	return obj
 }
 
@@ -31,32 +31,32 @@ func (t *TcpBinaryHander) Parse(buffer []byte, count int) {
 
 func (t *TcpBinaryHander) Dispose() {
 	t.parse = nil
-	t.done = nil
+	t.callBackFunc = nil
 	t.buffer.Dispose()
 }
 
 func (t *TcpBinaryHander) restart() {
 	t.buffer = newByteBuffer(headerSize)
-	t.parse = t.packetLength
+	t.parse = t.parsePacketLength
 }
 
-func (t *TcpBinaryHander) packetLength(buffer []byte, count int, offset int) int {
+func (t *TcpBinaryHander) parsePacketLength(buffer []byte, count int, offset int) int {
 	var index = t.buffer.Read(buffer, count, offset)
 	if !t.buffer.Done() {
 		return index
 	}
 	size := int(t.buffer.buffers[0])<<24 | int(t.buffer.buffers[1])<<16 | int(t.buffer.buffers[2])<<8 | int(t.buffer.buffers[3])
 	t.buffer = newByteBuffer(size)
-	t.parse = t.packetBody
+	t.parse = t.parsePacketBody
 	return index
 }
 
-func (t *TcpBinaryHander) packetBody(buffer []byte, count int, offset int) int {
+func (t *TcpBinaryHander) parsePacketBody(buffer []byte, count int, offset int) int {
 	index := t.buffer.Read(buffer, count, offset)
 	if !t.buffer.Done() {
 		return index
 	}
-	t.done(t.buffer.buffers)
+	t.callBackFunc(t.buffer.buffers)
 	t.restart()
 	return index
 }
